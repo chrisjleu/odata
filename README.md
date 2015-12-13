@@ -6,7 +6,7 @@ It is based on a [sample server application](https://olingo.apache.org/doc/odata
 This is a rapid prototype so naturally there are many untidy parts to it. For instance:
 
 - No unit tests
-- Incomplete functionality (not all CRUD features implemented)
+- Incomplete functionality (only create implemented for cars)
 - No form data validation
 - Missing Javadoc
 - In-memory data store

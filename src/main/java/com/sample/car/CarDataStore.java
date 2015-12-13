@@ -76,6 +76,10 @@ public enum CarDataStore {
 		return data;
 	}
 
+	public void deleteCar(final long carId) {
+		memoryDataStore.remove(carId);
+	}
+	
 	public Map<String, Object> getManufacturer(final int id) {
 		Map<String, Object> data = null;
 		Calendar date = Calendar.getInstance(TimeZone.getTimeZone("GMT"));

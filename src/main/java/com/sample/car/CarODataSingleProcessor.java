@@ -44,6 +44,7 @@ import org.apache.olingo.odata2.api.exception.ODataNotImplementedException;
 import org.apache.olingo.odata2.api.processor.ODataResponse;
 import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
+import org.apache.olingo.odata2.api.uri.info.DeleteUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntitySetCountUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntitySetUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntityUriInfo;
@@ -183,13 +184,18 @@ public class CarODataSingleProcessor extends ODataSingleProcessor {
 
 		Map<String, Object> data = entry.getProperties();
 
+		// TODO: Note no support for creation of anything other than a car currently
 		String id = dataStore.addCar(data);
 		data.put("Id", Long.valueOf(id));
-		data.put("Updated", Calendar.getInstance(TimeZone.getTimeZone("GMT")));
 
 		// serialize the entry, Location header is set by OData Library
 		return EntityProvider.writeEntry(contentType, uriInfo.getStartEntitySet(), data,
 				EntityProviderWriteProperties.serviceRoot(getContext().getPathInfo().getServiceRoot()).build());
+	}
+	
+	@Override
+	public ODataResponse deleteEntity(DeleteUriInfo uriInfo, String contentType) throws ODataException {
+		throw new ODataNotImplementedException();
 	}
 	
 	private int getKeyValue(final KeyPredicate key) throws ODataException {
