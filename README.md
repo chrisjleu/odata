@@ -30,7 +30,15 @@ mvn package
 java -jar target/dependency/jetty-runner.jar target/*.war
 ```
 
-## Access
+## Production
+
+The application is running in the cloud:
+
+[https://odata-dashboard.herokuapp.com/](https://odata-dashboard.herokuapp.com/)
+
+Why not try creating a car!
+
+## Local
 User Interface:
 
 Car dashboard is deployed to the root context.
