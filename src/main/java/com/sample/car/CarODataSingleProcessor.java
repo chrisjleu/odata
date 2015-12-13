@@ -156,7 +156,6 @@ public class CarODataSingleProcessor extends ODataSingleProcessor {
 	@Override
 	public ODataResponse countEntitySet(final GetEntitySetCountUriInfo uriInfo, final String contentType)
 			throws ODataException {
-		System.out.println("Must implement system operation $count");
 		throw new ODataNotImplementedException();
 	}
 
@@ -187,6 +186,7 @@ public class CarODataSingleProcessor extends ODataSingleProcessor {
 		// TODO: Note no support for creation of anything other than a car currently
 		String id = dataStore.addCar(data);
 		data.put("Id", Long.valueOf(id));
+		data.put("Updated", Calendar.getInstance(TimeZone.getTimeZone("GMT")));
 
 		// serialize the entry, Location header is set by OData Library
 		return EntityProvider.writeEntry(contentType, uriInfo.getStartEntitySet(), data,

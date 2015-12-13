@@ -23,20 +23,29 @@ cd odata
 mvn tomcat7:run or mvn jetty:run
 ```
 
+Another option is to run the jar itself (thanks to jetty-runner jar). This is useful for PaaS environments.
+
+```
+mvn package
+java -jar target/dependency/jetty-runner.jar target/*.war
+```
+
 ## Access
 User Interface:
 
-[http://localhost:8080/my-car-service/cars.html](http://localhost:8080/my-car-service/cars.html)
+Car dashboard is deployed to the root context.
+
+[http://localhost:8080/](http://localhost:8080/)
 
 Service meta-data:
 
 OData services, unlike traditional REST APIs, provide information about what the service looks like.
 
-[http://localhost:8080/my-car-service/CarService.svc/$metadata](http://localhost:8080/my-car-service/CarService.svc/$metadata)
+[http://localhost:8080/CarService.svc/$metadata](http://localhost:8080/my-car-service/CarService.svc/$metadata)
 
 Queries:
 
-curl -H 'accept: application/json' http://localhost:8080/my-car-service/CarService.svc/Cars | python -m json.tool
+curl -H 'accept: application/json' http://localhost:8080/CarService.svc/Cars | python -m json.tool
 
 
 ## Debug

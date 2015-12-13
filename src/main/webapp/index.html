@@ -31,7 +31,7 @@
 			oTabStrip1.placeAt("content");	
 
             // Set up model
-            var oModel = new sap.ui.model.odata.ODataModel("http://localhost:8080/my-car-service/CarService.svc", false);
+            var oModel = new sap.ui.model.odata.ODataModel("http://localhost:8080/CarService.svc", false);
             sap.ui.getCore().setModel(oModel);
 
             /*****   CREATE Operation  *****/
@@ -124,7 +124,7 @@
             };
             
             /*****   DELETE Operation  *****/
-            function openDeleteDialog(email) {
+            function openDeleteDialog(Id) {
                 var oDeleteDialog = new sap.ui.commons.Dialog();
                 oDeleteDialog.setTitle("Delete car");
                 var oText = new sap.ui.commons.TextView({text: "Are you sure to delete this item?"});
@@ -133,7 +133,7 @@
                     new sap.ui.commons.Button({
                         text: "Confirm", 
                         press:function(){ 
-                            sap.ui.getCore().getModel().remove("/Cars('" + Id + "')", null, function() {
+                            sap.ui.getCore().getModel().remove("/Cars(" + Id + ")", null, function() {
                                 sap.ui.getCore().getModel().refresh();
                                 oDeleteDialog.close();
                             },function(){
