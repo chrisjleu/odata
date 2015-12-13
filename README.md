@@ -1,9 +1,19 @@
 # OData
-OData Service with Olingo V2 and a UI that makes use of SAP UI5. 
+OData Service with [Olingo V2](https://olingo.apache.org/doc/odata2/index.html) and a UI that makes use of [(SAP) OpenUI5](http://openui5.org/). The main purpose is to explore what Open UI5 can do and the programming model that OLingo provides.
 
-There are many untidy parts but the main purpose is to explore what UI5 can do and the programming model that OLingo provides.
+It is based on a [sample server application](https://olingo.apache.org/doc/odata2/sample-setup.html) but with some additions, namely the ability to create new elements (cars in this case).
 
-It would be a good idea to upgrade this to OLingo V4.
+This is a rapid prototype so naturally there are many untidy parts to it. For instance:
+
+- No unit tests
+- Incomplete functionality (not all CRUD features implemented)
+- No form data validation
+- Missing Javadoc
+- In-memory data store
+- Javascript is not factored out nicely
+- and so on...
+
+It would be a good idea to upgrade this to [OLingo V4](https://olingo.apache.org/doc/odata4/) as the APIs look to have changed quite a bit.
 
 ## Run
 
@@ -14,11 +24,13 @@ mvn tomcat7:run or mvn jetty:run
 ```
 
 ## Access
-UI:
+User Interface:
 
-http://localhost:8080/my-car-service/cars.html
+[http://localhost:8080/my-car-service/cars.html](http://localhost:8080/my-car-service/cars.html)
 
 Service meta-data:
+
+OData services, unlike traditional REST APIs, provide information about what the service looks like.
 
 [http://localhost:8080/my-car-service/CarService.svc/$metadata](http://localhost:8080/my-car-service/CarService.svc/$metadata)
 
@@ -29,6 +41,8 @@ curl -H 'accept: application/json' http://localhost:8080/my-car-service/CarServi
 
 ## Debug
 
+Set the debug port to 4000:
 ```
 export MAVEN_OPTS="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=4000,server=y,suspend=n"
+mvn jetty:run
 ```
