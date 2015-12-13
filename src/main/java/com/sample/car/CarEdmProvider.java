@@ -129,7 +129,7 @@ public class CarEdmProvider extends EdmProvider {
 
         // Properties
         List<Property> properties = new ArrayList<Property>();
-        properties.add(new SimpleProperty().setName("Id").setType(EdmSimpleTypeKind.Int32).setFacets(
+        properties.add(new SimpleProperty().setName("Id").setType(EdmSimpleTypeKind.Int64).setFacets(
             new Facets().setNullable(false)));
         properties.add(new SimpleProperty().setName("Model").setType(EdmSimpleTypeKind.String).setFacets(
             new Facets().setNullable(false).setMaxLength(100).setDefaultValue("Hugo"))

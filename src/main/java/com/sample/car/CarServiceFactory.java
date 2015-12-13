@@ -25,6 +25,9 @@ import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.processor.ODataContext;
 import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
 
+/**
+ * Initializes the "endpoint" for processing requests and the meta-data provider.
+ */
 public class CarServiceFactory extends ODataServiceFactory {
 
   @Override

@@ -1,53 +1,268 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<!--
-  Licensed to the Apache Software Foundation (ASF) under one
-         or more contributor license agreements.  See the NOTICE file
-         distributed with this work for additional information
-         regarding copyright ownership.  The ASF licenses this file
-         to you under the Apache License, Version 2.0 (the
-         "License"); you may not use this file except in compliance
-         with the License.  You may obtain a copy of the License at
-  
-           http://www.apache.org/licenses/LICENSE-2.0
-  
-         Unless required by applicable law or agreed to in writing,
-         software distributed under the License is distributed on an
-         "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-         KIND, either express or implied.  See the License for the
-         specific language governing permissions and limitations
-         under the License.
--->
+<!DOCTYPE HTML>
 <html>
-  <head>
-    <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <h1>Apache Olingo - OData Car Sample Project</h1>
-    <div>
-      <ul>
-        <li><a href="CarService.svc">Link to Car Sample Service Root - /CarService.svc</a></li>
-        <li><a href="CarService.svc/$metadata">Link to Car Sample Service Metadata - /CarService.svc/$metadata</a></li>
-      </ul>
-    </div>
-    <div>
-      <ul>
-        <li>Entity Sets
-          <ul>
-            <li><a href="CarService.svc/Cars">/Cars</a></li>        
-            <li><a href="CarService.svc/Manufacturers">/Manufacturers</a></li>        
-          </ul>
-        </li>
-        <li>Sample Entities
-          <ul>
-            <li><a href="CarService.svc/Cars(1)">/Cars(1)</a></li>
-            <li><a href="CarService.svc/Cars(2)">/Cars(2)</a></li>          
-            <li><a href="CarService.svc/Cars(3)">/Cars(3)</a></li>        
-            <li><a href="CarService.svc/Cars(3)/Manufacturer">/Cars(3)/Manufacturer</a></li>        
-            <li><a href="CarService.svc/Manufacturers(2)">/Manufacturers(2)</a></li>        
-          </ul>
-        </li>
-      </ul>
-    </div>
-  </body>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+
+        <script src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+                id="sap-ui-bootstrap"
+                data-sap-ui-libs="sap.ui.commons, sap.ui.table"
+                data-sap-ui-theme="sap_bluecrystal">
+        </script>
+        <!-- only load the mobile lib "sap.m" and the "sap_bluecrystal" theme -->
+
+        <script>
+            //create the ApplicationHeader control
+            var oAppHeader = new sap.ui.commons.ApplicationHeader("appHeader"); 
+            oAppHeader.setLogoSrc("http://sap.github.io/openui5/images/icotxt_white_220x72_blue_open.png");
+            oAppHeader.setDisplayWelcome(false);
+            oAppHeader.setDisplayLogoff(false);
+            oAppHeader.placeAt("content");
+
+			// Create a TabStrip instance
+			var oTabStrip1 = new sap.ui.commons.TabStrip("TabStrip1");
+			oTabStrip1.setEnableTabReordering(true);
+			oTabStrip1.attachClose( function (oEvent) {
+				var oTabStrip = oEvent.oSource;
+				oTabStrip.closeTab(oEvent.getParameter("index"));
+			});
+			
+			// Attach the TabStrip to the page
+			oTabStrip1.placeAt("content");	
+
+            // Set up model
+            var oModel = new sap.ui.model.odata.ODataModel("http://localhost:8080/my-car-service/CarService.svc", false);
+            sap.ui.getCore().setModel(oModel);
+
+            /*****   CREATE Operation  *****/
+            function openCreateDialog(){ 
+                var oCreateDialog = new sap.ui.commons.Dialog();
+                oCreateDialog.setTitle("Create car");
+                var oSimpleForm = new sap.ui.layout.form.SimpleForm({
+                    maxContainerCols: 2,
+                    content:[
+                        new sap.ui.core.Title({text:"New Car Details"}),
+                        new sap.ui.commons.Label({text:"Model"}),
+                        new sap.ui.commons.TextField({value:""}),
+                        new sap.ui.commons.Label({text:"ManufacturerId"}),
+                        new sap.ui.commons.TextField({value:""}),
+                        new sap.ui.commons.Label({text:"Price"}),
+                        new sap.ui.commons.TextField({value:""}),
+                        new sap.ui.commons.Label({text:"Currency"}),
+                        new sap.ui.commons.TextField({value:""}),
+                    ]
+                });                
+                oCreateDialog.addContent(oSimpleForm);
+                oCreateDialog.addButton(
+                    new sap.ui.commons.Button({
+                        text: "Create", 
+                        press: function() {
+                            var content = oSimpleForm.getContent();
+                            var oEntry = {};
+                            oEntry.Model = content[2].getValue();
+                            oEntry.ManufacturerId = content[4].getValue();
+                            oEntry.Price = content[6].getValue();
+                            oEntry.Currency = content[8].getValue();
+                            sap.ui.getCore().getModel().create('/Cars', oEntry, null, function(){
+                                    oCreateDialog.close();
+                                    sap.ui.getCore().getModel().refresh();
+                                },function(){
+                                    oCreateDialog.close();
+                                    alert("Create failed");
+                                }
+                            );
+                        }
+                    })
+                );
+                oCreateDialog.open();
+            };        
+            
+            /*****   PUT Operation  *****/
+            function openUpdateDialog(car){ 
+                var oUpdateDialog = new sap.ui.commons.Dialog();
+                oUpdateDialog.setTitle("Update car details");
+                var oSimpleForm = new sap.ui.layout.form.SimpleForm({
+                    maxContainerCols: 2,
+                    content:[
+                        new sap.ui.core.Title({text:"Car"}),
+                        new sap.ui.commons.Label({text:"Id"}),
+                        new sap.ui.commons.TextField({value: car[0].getValue(), editable: false}),
+                        new sap.ui.commons.Label({text:"Model"}),
+                        new sap.ui.commons.TextField({value: car[1].getValue()}),
+                        new sap.ui.commons.Label({text:"Manufacturer"}),
+                        new sap.ui.commons.TextField({value: car[2].getValue()}),
+                        new sap.ui.commons.Label({text:"Price"}),
+                        new sap.ui.commons.TextField({value: car[3].getValue()}),
+                        new sap.ui.commons.Label({text:"Currency"}),
+                        new sap.ui.commons.TextField({value: car[4].getValue()}),
+                    ]
+                });                
+                oUpdateDialog.addContent(oSimpleForm);
+                oUpdateDialog.addButton(
+                    new sap.ui.commons.Button({
+                        text: "Submit", 
+                        press: function() {
+                            var content = oSimpleForm.getContent();
+                            var oEntry = {};
+                            oEntry.Id = content[2].getValue();
+                            oEntry.Model = content[4].getValue();
+                            oEntry.ManufacturerId = content[6].getValue();
+                            oEntry.Price = content[8].getValue();
+                            oEntry.Currency = content[10].getValue();
+                            sap.ui.getCore().getModel().update("/Cars('" + oEntry.Id + "')", oEntry, null, function(){
+                                    sap.ui.getCore().getModel().refresh();
+                                    oUpdateDialog.close();
+                                },function(){
+                                    oUpdateDialog.close();
+                                    alert("Update failed");
+                                }
+                            );
+                        }
+                    })
+                );
+                oUpdateDialog.open();
+            };
+            
+            /*****   DELETE Operation  *****/
+            function openDeleteDialog(email) {
+                var oDeleteDialog = new sap.ui.commons.Dialog();
+                oDeleteDialog.setTitle("Delete car");
+                var oText = new sap.ui.commons.TextView({text: "Are you sure to delete this item?"});
+                oDeleteDialog.addContent(oText);
+                oDeleteDialog.addButton(
+                    new sap.ui.commons.Button({
+                        text: "Confirm", 
+                        press:function(){ 
+                            sap.ui.getCore().getModel().remove("/Cars('" + Id + "')", null, function() {
+                                sap.ui.getCore().getModel().refresh();
+                                oDeleteDialog.close();
+                            },function(){
+                                oDeleteDialog.close();
+                                alert("Delete failed");
+                            });
+                        }
+                    })
+                );
+                oDeleteDialog.open();
+            }
+
+			function newCRUDTable() {
+	            // Set up table
+	            var oTable = new sap.ui.table.Table({
+	                editable: false,
+	                toolbar: new sap.ui.commons.Toolbar({ 
+	                    items: [ 
+	                        new sap.ui.commons.Button({
+	                            text: "Create", 
+	                            press: function() {
+	                                openCreateDialog();
+	                            }, 
+	                        }),
+	                        new sap.ui.commons.Button({
+	                            text: "Update", 
+	                            press: function() {
+	                                var idx = oTable.getSelectedIndex();
+	                                if (idx == -1) return;
+	                                var rows = oTable.getRows();
+	                                var item = rows[idx].getCells();
+	                                openUpdateDialog(item);
+	                            }, 
+	                        }),
+	                        new sap.ui.commons.Button({
+	                            text: "Delete", 
+	                            press: function() {
+	                                var idx = oTable.getSelectedIndex();
+	                                if (idx == -1) return;
+	                                var rows = oTable.getRows();
+	                                var item = rows[idx].getCells();
+	                                openDeleteDialog(item[0].getValue());
+	                            }, 
+	                        })
+	                    ]
+	                }),
+	            });
+	          
+	          return oTable;  
+	        }    
+
+            function createCarTable(oTable,oModel) {
+	            oTable.addColumn(new sap.ui.table.Column({
+	                label: new sap.ui.commons.Label({text: "Id"}),
+	                template: new sap.ui.commons.TextField().bindProperty("value", "Id"),
+	                editable: false,
+	                sortProperty: "Id"
+	            }));
+	        
+	            oTable.addColumn(new sap.ui.table.Column({
+	                label: new sap.ui.commons.Label({text: "Model"}),
+	                template: new sap.ui.commons.TextField().bindProperty("value", "Model"),
+	                sortProperty: "Model",
+	                editable: false,
+	            }));
+	        
+	            oTable.addColumn(new sap.ui.table.Column({
+	                label: new sap.ui.commons.Label({text: "ManufacturerId"}),
+	                template: new sap.ui.commons.TextField().bindProperty("value", "ManufacturerId"),
+	                sortProperty: "ManufacturerId",
+	                editable: false,
+	            }));
+	        
+	            oTable.addColumn(new sap.ui.table.Column({
+	                label: new sap.ui.commons.Label({text: "Price"}),
+	                template: new sap.ui.commons.TextField().bindProperty("value", "Price"),
+	                sortProperty: "Price",
+	                editable: false,
+	            }));
+	        
+	            oTable.addColumn(new sap.ui.table.Column({
+	                label: new sap.ui.commons.Label({text: "Currency"}),
+	                template: new sap.ui.commons.TextField().bindProperty("value", "Currency"),
+	                sortProperty: "Currency",
+	                editable: false,
+	            }));
+	
+	            oTable.setModel(oModel);
+	            oTable.bindRows("/Cars");
+	            
+	            return oTable;
+            }
+
+            function createManufacturerTable(oTable,oModel) {
+	            oTable.addColumn(new sap.ui.table.Column({
+	                label: new sap.ui.commons.Label({text: "Id"}),
+	                template: new sap.ui.commons.TextField().bindProperty("value", "Id"),
+	                editable: false,
+	                sortProperty: "Id"
+	            }));
+	        
+	            oTable.addColumn(new sap.ui.table.Column({
+	                label: new sap.ui.commons.Label({text: "Name"}),
+	                template: new sap.ui.commons.TextField().bindProperty("value", "Name"),
+	                sortProperty: "Name",
+	                editable: false,
+	            }));
+	        
+	            oTable.addColumn(new sap.ui.table.Column({
+	                label: new sap.ui.commons.Label({text: "Country"}),
+	                template: new sap.ui.commons.TextField().bindProperty("value", "Address/Country"),
+	                sortProperty: "Country",
+	                editable: false,
+	            }));
+
+	            oTable.setModel(oModel);
+	            oTable.bindRows("/Manufacturers");
+	            
+	            return oTable;
+            }
+
+			// Create tabs
+			oTabStrip1.createTab("Cars",createCarTable(newCRUDTable(),oModel));
+			oTabStrip1.createTab("Manufacturers",createManufacturerTable(newCRUDTable(),oModel));
+
+        </script>
+
+    </head>
+    <body class="sapUiBody" role="application">
+        <div id="content"></div>
+    </body>
 </html>
